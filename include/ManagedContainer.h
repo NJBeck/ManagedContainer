@@ -3,6 +3,7 @@
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
+#include <stdexcept>
 
 template<class T>
 class ManagedContainer{
@@ -19,13 +20,15 @@ class ManagedContainer{
 
     void shrink(); // rebuilds container without freed elements
     public:
-    ManagedContainer(double);
+    ManagedContainer(double limit = .5);
 
     // inserts object T with specified handle
     void insert(size_t const handle, T const);
 
     // erase object with this handle
     void erase(size_t const handle);
+
+    T& get(size_t handle);
 };
 
 template<class T>
@@ -52,6 +55,8 @@ void ManagedContainer<T>::erase(size_t handle){
         map_.erase(found);
         if(free_.size() / container_.size() > load_limit_)
             shrink();
+    }else{
+        throw std::range_error("handle not found");
     }
 }
 
@@ -66,5 +71,15 @@ void ManagedContainer<T>::shrink(){
     }
     container_ = new_container;
     free_.clear();
+}
+
+template<class T>
+T& ManagedContainer<T>::get(size_t handle){
+    auto found = map_.find(handle);
+    if(found != map_.end()){
+        return container_[found->second];
+    }else{
+        throw std::range_error("handle not found");
+    }
 }
 
