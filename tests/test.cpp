@@ -1,3 +1,5 @@
+// TODO: test for more types
+
 #include "ManagedContainer.h"
 #include "gtest/gtest.h"
 
@@ -6,44 +8,58 @@
 namespace{
     class IntContainerTest : public ::testing::Test {
         protected:
-            void SetUp() override{
-                for(int i = 0; i < count; ++i){
-                    container_.insert(i, i);
-                }
-
-            }
+            // void SetUp() override{}
             // void TearDown() override{}
-            int count = 100000;
+            int count = 10000;
             ManagedContainer<int> container_;
+            std::vector<size_t> indices_;
     };
 
-TEST_F(IntContainerTest, InsertTest){
-
+TEST_F(IntContainerTest, SizeTest){
     for(int i = 0; i < count; ++i){
-        EXPECT_EQ(i, container_.get(i));
+        container_.insert(i);
+    }
+    ASSERT_EQ(container_.size(), count);
+}
+
+TEST_F(IntContainerTest, InsertTest){
+    for(int i = 0; i < count; ++i){
+        indices_.push_back(container_.insert(i));
+    }
+    for(int i = 0; i < count; ++i){
+        ASSERT_EQ(indices_[i], container_[i]);
     }
 }
 
 TEST_F(IntContainerTest, EraseTest){
-    for(int i = 0; i < count / 2 + 1; ++i){
+    for(int i = 0; i < count; ++i){
+        container_.insert(i);
+    }
+    for(int i = 0; i < count; ++i){
         container_.erase(i);
     }
-    for(int i = count / 2 + 1; i < count; ++i){
-        EXPECT_EQ(i, container_.get(i));
+    for(int i = 0; i < count; ++i){
+        ASSERT_THROW(auto result = container_[i], std::out_of_range);
     }
+    ASSERT_EQ(0, container_.size());
 }
 
-TEST_F(IntContainerTest, RefillTest){
+TEST_F(IntContainerTest, FillEraseRefillTest){
+    for(int i = 0; i < count; ++i){
+        container_.insert(i);
+    }
     for(int i = 0; i < count; ++i){
         container_.erase(i);
     }
     for(int i = 0; i < count; ++i){
-        container_.insert(i, i);
+        indices_.emplace_back(container_.insert(i));
     }
-    for(int i = 0; i < count; ++i){
-        EXPECT_EQ(i, container_.get(i));
+    for (int i = 0; i < count; ++i) {
+        ASSERT_EQ(i, container_[indices_[i]]);
     }
+    
 }
+
 }
 
 
