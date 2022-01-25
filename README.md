@@ -1,8 +1,11 @@
 # ManagedContainer
 
-A wrapper for vector where newly added objects are inserted into vacancies of previously erased objects.  
+A wrapper for vector where newly added objects are inserted into vacancies of previously erased objects.
+
+Also keeps reference counts of objects in the container, so elements can be used and "deleted" by users.
 
 * Insertion and deletion are constant time
+* Indices are stable so they can be safely stored/used by other structures
 
 ## Cloning
 

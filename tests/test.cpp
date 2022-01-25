@@ -1,4 +1,5 @@
-// TODO: test for more types
+// TODO:    test for more types
+//          test reference counting
 
 #include "ManagedContainer.h"
 #include "gtest/gtest.h"
@@ -36,7 +37,7 @@ TEST_F(IntContainerTest, EraseTest){
         container_.insert(i);
     }
     for(int i = 0; i < count; ++i){
-        container_.erase(i);
+        container_.decrement_reference(i);
     }
     for(int i = 0; i < count; ++i){
         ASSERT_THROW(auto result = container_[i], std::out_of_range);
@@ -49,7 +50,7 @@ TEST_F(IntContainerTest, FillEraseRefillTest){
         container_.insert(i);
     }
     for(int i = 0; i < count; ++i){
-        container_.erase(i);
+        container_.decrement_reference(i);
     }
     for(int i = 0; i < count; ++i){
         indices_.emplace_back(container_.insert(i));
